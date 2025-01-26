@@ -19,7 +19,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "include/cliper.h"
+#include "include/data.h"
 #include "../config.h"
 
 void usage(char *progname)
@@ -27,7 +29,6 @@ void usage(char *progname)
     fprintf(stderr, "Usage: %s <COMMAND>...\n", progname);
     fprintf(stderr, "Commands:\n");
     fprintf(stderr, "  append <TITLE> [DESCRIPTION]   Append new note\n");
-    fprintf(stderr, "  rewrite <TITLE> [DESCRIPTION]  Clear file and append new note\n");
     fprintf(stderr, "  read                           Read all notes\n");
     fprintf(stderr, "  clear INDEX                    Clear note by index\n\n");
     fprintf(stderr, "  help                           Show this message\n");
@@ -40,29 +41,14 @@ int main(int argc, char **argv)
     if (argc == 1)
         usage(argv[0]);
     
-    if (!strcmp(argv[1], "append")) {
-        if (argc < 3)
-            usage(argv[0]);
-        
-        cliper_write(0, argv[2], argc > 3 ? argv[3]
-                                          : NULL);
-    }
-    else if (!strcmp(argv[1], "rewrite")) {
-        if (argc < 3)
-            usage(argv[0]);
-        
-        cliper_write(1, argv[2], argc > 3 ? argv[3]
-                                          : NULL);
-    }
-    else if (!strcmp(argv[1], "read")) {
-        cliper_read_all();
-    }
-    else if (!strcmp(argv[1], "clear")) {
-        if (argc == 3)
-            cliper_clear_line(atoll(argv[2]));
-        else
-            usage(argv[0]);
-    }
+    cliper_db db = db_init();
+
+    if (!strcmp(argv[1], "append"))
+        cliper_append(&db, argc, argv);
+    else if (!strcmp(argv[1], "read"))
+        cliper_read_all(&db);
+    else if (!strcmp(argv[1], "clear"))
+        cliper_remove(&db, argc, argv);
     else if (!strcmp(argv[1], "version")) {
         fprintf(stderr, "CLIper version " CLIPER_VERSION "\n");
         fprintf(stderr, "Copyright (C) 2025 Andrey Stekolnikov <honakac@yandex.ru>\n");
@@ -70,5 +56,8 @@ int main(int argc, char **argv)
     }
     else
         usage(argv[0]);
+
+    db_close(&db);
+    
     return 0;
 }

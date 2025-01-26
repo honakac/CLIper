@@ -23,14 +23,10 @@
 #include <string.h>
 #include <time.h>
 
-#define PAGE_SIZE 512
-
-static char *get_ccurent_date()
+static char *get_ccurent_date(time_t now)
 {
-    time_t now;
     struct tm *local;
     static char date_str[128];
-    now = time(NULL);
     local = localtime(&now);
 
     sprintf(date_str, "%04d.%02d.%02d - %02d:%02d:%02d", local->tm_year + 1900, local->tm_mon + 1, local->tm_mday, local->tm_hour, local->tm_min, local->tm_sec);
@@ -38,123 +34,49 @@ static char *get_ccurent_date()
     return date_str;
 }
 
-static char *cliper_read_data(FILE *fp)
+void cliper_append(cliper_db *db, int argc, char **argv)
 {
-    struct {
-        char *buffer;
-        size_t pos;
-        size_t size;
-    } notes = {malloc(PAGE_SIZE), 0, PAGE_SIZE};
-    if (!notes.buffer) perror("malloc");
-
-    char ch;
-    while ((ch = fgetc(fp)) != EOF) {
-        if (notes.pos + 1 >= notes.size) {
-            notes.buffer = realloc(notes.buffer, (notes.size += PAGE_SIZE));
-
-            if (!notes.buffer) perror("realloc");
-        }
-
-        notes.buffer[notes.pos++] = ch;
-        notes.buffer[notes.pos] = 0;
-    }
-
-    return notes.buffer;
-}
-static char **cliper_read_lines(FILE *fp)
-{
-    char *buffer = cliper_read_data(fp);
-    struct {
-        char **buffer;
-        size_t pos;
-        size_t size;
-    } lines = {malloc(PAGE_SIZE * sizeof(char*)), 0, PAGE_SIZE};
-    if (!lines.buffer) perror("malloc");
-
-    char *line = strtok(buffer, "\n");
-    while (line != NULL) {
-        if (lines.pos + 1 >= lines.size) {
-            lines.buffer = realloc(lines.buffer, (lines.size += PAGE_SIZE) * sizeof(char*));
-
-            if (!lines.buffer) perror("realloc");
-        }
-
-        lines.buffer[lines.pos++] = line;
-        lines.buffer[lines.pos] = NULL;
-        line = strtok(NULL, "\n");
-    }
-
-    return lines.buffer;
-}
-
-static FILE *cliper_open_file(char *mode)
-{
-    FILE *file = fopen(TEMP_FILE, mode);
-    if (!file) perror("fopen");
-
-    return file;
-}
-
-void cliper_write(char overwrite, const char *title, const char *description)
-{
-    if (title == NULL) {
-        fprintf(stderr, "Error: Title cannot be NULL\n");
+    if (argc < 3) {
+        fprintf(stderr, "Error: Title is required.\n");
         return;
     }
 
-    FILE *fp = cliper_open_file(overwrite ? "w" : "a");
-    
-    if (description == NULL)
-        fprintf(fp, "[%s]: %s\n", get_ccurent_date(), title);
-    else
-        fprintf(fp, "[%s]: %s - %s\n", get_ccurent_date(), title, description);
+    cliper_note note;
+    memset(&note, 0, sizeof(note));
 
-    fclose(fp);
+    note.iat = time(NULL);
+    strcpy(note.title, argv[2]);
+    if (argc == 4)
+        strcpy(note.description, argv[3]);
+
+    db_append(db, &note);
+    db_save(db);
+
+    printf("Note appended successfully!\n");
 }
 
-void cliper_read_all()
+void cliper_read_all(cliper_db *db)
 {
-    FILE *fp = cliper_open_file("r");
+    for (size_t i = 0; i < db->pos / BLOCK_SIZE; i++) {
+        cliper_note note;
+        db_read(db, i, &note);
 
-    char **lines = cliper_read_lines(fp);
-
-    size_t countLine = 1;
-    for (char **ptr = lines; *ptr; ptr++)
-        fprintf(stdout, "%04zu: %s\n", countLine++, *ptr);
-
-    free(lines);
-    fclose(fp);
+        printf("[%04lu] %s (at %s)\n", i, note.title, get_ccurent_date((time_t) note.iat));
+        if (*note.description)
+            printf("  - %s\n", note.description);
+    }
 }
 
-void cliper_clear_line(long long index)
+void cliper_remove(cliper_db *db, int argc, char **argv)
 {
-    if (index <= 0) {
-        fprintf(stderr, "Error: Index cannot be null\n");
+    if (argc < 3) {
+        fprintf(stderr, "Error: Index is required.\n");
         return;
     }
 
-    FILE *fp = cliper_open_file("r");
-    char **lines = cliper_read_lines(fp);
+    size_t index = strtoul(argv[2], NULL, 10);
+    db_remove(db, index);
+    db_save(db);
 
-    fclose(fp);
-    fp = cliper_open_file("w");
-
-    size_t countLine = 1;
-    char isCleared = 0;
-    for (char **ptr = lines; *ptr; ptr++, countLine++) {
-        if (countLine != index)
-            fprintf(fp, "%s\n", *ptr);
-        else
-            isCleared = 1;
-    }
-
-    free(lines);
-    fclose(fp);
-
-    if (!isCleared) {
-        fprintf(stderr, "Error: Line with index %llu not found\n", index);
-        exit(1);
-    } else {
-        fprintf(stdout, "Line with index %llu cleared\n", index);
-    }
+    printf("Note with index %lu removed successfully!\n", index);
 }

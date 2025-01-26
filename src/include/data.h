@@ -17,9 +17,41 @@
  */
 
 #pragma once
-#include <stddef.h>
-#include "data.h"
 
-void cliper_append(cliper_db *db, int argc, char **argv);
-void cliper_read_all(cliper_db *db);
-void cliper_remove(cliper_db *db, int argc, char **argv);
+#include <stdio.h>
+#include <stddef.h>
+
+#define EXP_SIZE (sizeof(size_t))
+#define IAT_SIZE (sizeof(size_t))
+#define TITLE_SIZE 128
+#define DESCRIPTION_SIZE 128
+
+#define BLOCK_SIZE (IAT_SIZE+EXP_SIZE+TITLE_SIZE+DESCRIPTION_SIZE)
+
+#define DB_RELATIVE_PATH "/.config/cliper_db.bin"
+
+#define MEMORY_BLOCK_SIZE (BLOCK_SIZE*5)
+
+typedef struct {
+    size_t iat;
+    size_t exp;
+    char title[TITLE_SIZE];
+    char description[DESCRIPTION_SIZE];
+} cliper_note;
+
+typedef struct {
+    FILE *fp;
+    char path[1024];
+
+    void *buffer;
+    size_t pos;
+    size_t size;
+} cliper_db;
+
+void db_load(cliper_db *db);
+cliper_db db_init();
+void db_close(cliper_db *db);
+void db_append(cliper_db *db, cliper_note *note);
+void db_remove(cliper_db *db, size_t index);
+void db_read(cliper_db *db, size_t index, cliper_note *note);
+void db_save(cliper_db *db);
