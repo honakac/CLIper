@@ -25,7 +25,7 @@ make
 ./cliper clear 1                                     # Remove first element
 ```
 
-> [!INFO]
+> [!NOTE]
 > Make sure you have the necessary permissions to read and write files in the directory `/tmp/`.
 
 <br>
