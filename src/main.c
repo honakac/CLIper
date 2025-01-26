@@ -18,91 +18,57 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <getopt.h>
+#include <string.h>
 #include "include/cliper.h"
 #include "../config.h"
 
-typedef enum {
-    CM_NONE,
-    CM_APPEND,
-    CM_WRITE,
-    CM_READ_ALL,
-    CM_CLEAR_ALL,
-    CM_CLEAR_LINE
-} CLIPER_MODES;
-
 void usage(char *progname)
 {
-    fprintf(stderr, "Usage: %s [OPTIONS]...\n", progname);
-    fprintf(stderr, "Options:\n");
-    fprintf(stderr, "  -t TITLE        Set title\n");
-    fprintf(stderr, "  -d DESCRIPTION  Set description\n");
-    fprintf(stderr, "  -h              Show this message and exit\n");
-    fprintf(stderr, "  -v              Print version information and exit\n");
-
-    fprintf(stderr, "Options(Modes):\n");
-    fprintf(stderr, "  -a              Set append mode\n");
-    fprintf(stderr, "  -w              Set write mode (clear file and write)\n");
-    fprintf(stderr, "  -r              Set read mode (read all notes)\n");
-    fprintf(stderr, "  -c              Set Clear mode (clear file)\n");
-    fprintf(stderr, "  -C INDEX        Set Clear line mode (clear line by index)\n");
+    fprintf(stderr, "Usage: %s <COMMAND>...\n", progname);
+    fprintf(stderr, "Commands:\n");
+    fprintf(stderr, "  append <TITLE> [DESCRIPTION]   Append new note\n");
+    fprintf(stderr, "  rewrite <TITLE> [DESCRIPTION]  Clear file and append new note\n");
+    fprintf(stderr, "  read                           Read all notes\n");
+    fprintf(stderr, "  clear INDEX                    Clear note by index\n\n");
+    fprintf(stderr, "  help                           Show this message\n");
+    fprintf(stderr, "  version                        Show version\n");
     exit(1);
 }
 
 int main(int argc, char **argv)
 {
-    int opt;
-    struct {
-        char *title;
-        char *description;
-        size_t index;
-        CLIPER_MODES mode;
-    } options = {NULL, NULL, -1, CM_NONE};
-
-    while ((opt = getopt(argc, argv, "acwrhvt:d:C:")) != -1) {
-        switch (opt) {
-            case 'a': options.mode = CM_APPEND; break;
-            case 'w': options.mode = CM_WRITE; break;
-            case 'r': options.mode = CM_READ_ALL; break;
-            case 'c': options.mode = CM_CLEAR_ALL; break;
-            case 'C': options.mode = CM_CLEAR_LINE; options.index = (size_t) atoll(optarg); break;
-
-            case 't': options.title = optarg; break;
-            case 'd': options.description = optarg; break;
-
-            case 'v':
-                fprintf(stderr, "CLIper version " CLIPER_VERSION "\n");
-                fprintf(stderr, "Copyright (C) 2025 Andrey Stekolnikov <honakac@yandex.ru>\n");
-                fprintf(stderr, "License: GNU General Public License v3 or later\n");
-                return 0;
-            case 'h':
-            default:
-                usage(argv[0]);
-        }
-    }
-
-    switch (options.mode) {
-        case CM_APPEND:
-        case CM_WRITE:
-            cliper_write(options.mode == CM_WRITE, options.title, options.description);
-            break;
+    if (argc == 1)
+        usage(argv[0]);
+    
+    if (!strcmp(argv[1], "append")) {
+        if (argc < 3)
+            usage(argv[0]);
         
-        case CM_CLEAR_ALL:
-            fclose(fopen(TEMP_FILE, "w"));
-            break;
-
-        case CM_CLEAR_LINE:
-            cliper_clear_line(options.index);
-            break;
-
-        case CM_READ_ALL:
-            cliper_read_all();
-            break;
-
-        default:
-            fprintf(stderr, "Error: Invalid mode\n");
+        cliper_write(0, argv[2], argc > 3 ? argv[3]
+                                          : NULL);
+    }
+    else if (!strcmp(argv[1], "rewrite")) {
+        if (argc < 3)
+            usage(argv[0]);
+        
+        cliper_write(1, argv[2], argc > 3 ? argv[3]
+                                          : NULL);
+    }
+    else if (!strcmp(argv[1], "read")) {
+        cliper_read_all();
+    }
+    else if (!strcmp(argv[1], "clear")) {
+        if (argc == 3)
+            cliper_clear_line(atoll(argv[2]));
+        else
             usage(argv[0]);
     }
-
+    else if (!strcmp(argv[1], "version")) {
+        fprintf(stderr, "CLIper version " CLIPER_VERSION "\n");
+        fprintf(stderr, "Copyright (C) 2025 Andrey Stekolnikov <honakac@yandex.ru>\n");
+        fprintf(stderr, "License: GNU General Public License v3 or later\n");
+    }
+    else
+        usage(argv[0]);
     return 0;
 }

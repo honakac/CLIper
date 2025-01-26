@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
 .vscode
+cliper
 
 # Object files
 *.o

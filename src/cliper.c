@@ -126,9 +126,9 @@ void cliper_read_all()
     fclose(fp);
 }
 
-void cliper_clear_line(size_t index)
+void cliper_clear_line(long long index)
 {
-    if (index == (size_t) -1) {
+    if (index <= 0) {
         fprintf(stderr, "Error: Index cannot be null\n");
         return;
     }
@@ -152,9 +152,9 @@ void cliper_clear_line(size_t index)
     fclose(fp);
 
     if (!isCleared) {
-        fprintf(stderr, "Error: Line with index %zu not found\n", index);
+        fprintf(stderr, "Error: Line with index %llu not found\n", index);
         exit(1);
     } else {
-        fprintf(stdout, "Line with index %zu cleared\n", index);
+        fprintf(stdout, "Line with index %llu cleared\n", index);
     }
 }

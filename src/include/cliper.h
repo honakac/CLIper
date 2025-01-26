@@ -21,4 +21,4 @@
 
 void cliper_write(char overwrite, const char *title, const char *description);
 void cliper_read_all();
-void cliper_clear_line(size_t index);
+void cliper_clear_line(long long index);
