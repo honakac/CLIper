@@ -2,8 +2,6 @@
 <div align="center">
   <img src="https://www.aschey.tech/tokei/github/honakac/CLIper">
   <img src="https://img.shields.io/github/languages/code-size/honakac/CLIper.svg">
-  <img src="https://img.shields.io/github/v/release/honakac/CLIper">
-  <img src="https://img.shields.io/github/downloads/honakac/CLIper/total">
 </div>
 <hr>
 <br>
