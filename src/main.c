@@ -19,18 +19,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include "include/cliper.h"
 #include "include/data.h"
-#include "../config.h"
+
+#define CLIPER_VERSION "v1.1.1"
 
 void usage(char *progname)
 {
     fprintf(stderr, "Usage: %s <COMMAND>...\n", progname);
     fprintf(stderr, "Commands:\n");
     fprintf(stderr, "  append <TITLE> [DESCRIPTION]   Append new note\n");
-    fprintf(stderr, "  read                           Read all notes\n");
-    fprintf(stderr, "  clear INDEX                    Clear note by index\n\n");
+    fprintf(stderr, "  search KEYWORD                 Search for notes by keyword\n");
+    fprintf(stderr, "  clear INDEX                    Clear note by index\n");
+    fprintf(stderr, "  read                           Read all notes\n\n");
     fprintf(stderr, "  help                           Show this message\n");
     fprintf(stderr, "  version                        Show version\n");
     exit(1);
@@ -45,10 +46,12 @@ int main(int argc, char **argv)
 
     if (!strcmp(argv[1], "append"))
         cliper_append(&db, argc, argv);
-    else if (!strcmp(argv[1], "read"))
-        cliper_read_all(&db);
     else if (!strcmp(argv[1], "clear"))
         cliper_remove(&db, argc, argv);
+    else if (!strcmp(argv[1], "search"))
+        cliper_search(&db, argc, argv);
+    else if (!strcmp(argv[1], "read"))
+        cliper_read_all(&db);
     else if (!strcmp(argv[1], "version")) {
         fprintf(stderr, "CLIper version " CLIPER_VERSION "\n");
         fprintf(stderr, "Copyright (C) 2025 Andrey Stekolnikov <honakac@yandex.ru>\n");

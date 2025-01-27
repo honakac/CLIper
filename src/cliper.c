@@ -17,11 +17,11 @@
  */
 
 #include "include/cliper.h"
-#include "../config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "include/ansi_colors.h"
 
 static char *get_ccurent_date(time_t now)
 {
@@ -32,6 +32,12 @@ static char *get_ccurent_date(time_t now)
     sprintf(date_str, "%04d.%02d.%02d - %02d:%02d:%02d", local->tm_year + 1900, local->tm_mon + 1, local->tm_mday, local->tm_hour, local->tm_min, local->tm_sec);
 
     return date_str;
+}
+static void cliper_print_note(size_t index, cliper_note *note)
+{
+    printf("[" YEL "%03lu" CRESET "] " GRN "%s" CRESET " (" CYN "%s" CRESET ")\n", index, note->title, get_ccurent_date((time_t) note->iat));
+    if (*note->description)
+        printf("  - %s\n", note->description);
 }
 
 void cliper_append(cliper_db *db, int argc, char **argv)
@@ -61,9 +67,25 @@ void cliper_read_all(cliper_db *db)
         cliper_note note;
         db_read(db, i, &note);
 
-        printf("[%04lu] %s (at %s)\n", i, note.title, get_ccurent_date((time_t) note.iat));
-        if (*note.description)
-            printf("  - %s\n", note.description);
+        cliper_print_note(i, &note);
+    }
+}
+
+void cliper_search(cliper_db *db, int argc, char **argv)
+{
+    if (argc != 3) {
+        fprintf(stderr, "Error: Keyword is required.\n");
+        return;
+    }
+    char *keyword = argv[2];
+
+    for (size_t i = 0; i < db->pos / BLOCK_SIZE; i++) {
+        cliper_note note;
+        db_read(db, i, &note);
+
+        if (strstr(note.title, keyword) || strstr(note.description, keyword)) {
+            cliper_print_note(i, &note);
+        }
     }
 }
 

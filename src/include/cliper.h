@@ -23,3 +23,4 @@
 void cliper_append(cliper_db *db, int argc, char **argv);
 void cliper_read_all(cliper_db *db);
 void cliper_remove(cliper_db *db, int argc, char **argv);
+void cliper_search(cliper_db *db, int argc, char **argv);
