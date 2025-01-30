@@ -54,4 +54,4 @@ void db_close(cliper_db *db);
 void db_append(cliper_db *db, cliper_note *note);
 void db_remove(cliper_db *db, size_t index);
 void db_read(cliper_db *db, size_t index, cliper_note *note);
-void db_save(cliper_db *db);
+void db_save(cliper_db *db); 
