@@ -11,22 +11,21 @@ CLIper - Lightweight CLI tool for managing notes in the terminal.<br>
 CLIper is a simple command-line tool that allows you to manage notes directly from your terminal. It provides basic functionality for creating, reading, and clearing notes.
 
 # Compilation:
-To compile CLIper, you need a C compiler. Use the following command:
+To compile CLIper, you need a C++ compiler. Use the following command:
 
 ```
+cd build
+cmake ..
 make
 ```
 
 ## Examples:
 
 ```bash
-./cliper append "Meeting" "Discuss project timeline" # Append note
-./cliper read                                        # Show list notes
-./cliper clear 1                                     # Remove first element
+./cliper append -t "Meeting" -c "Discuss project timeline" # Append note
+./cliper list                                              # Show list notes
+./cliper remove -i 0                                       # Remove first element
 ```
-
-> [!NOTE]
-> Make sure you have the necessary permissions to read and write files in the directory `/tmp/`.
 
 <br>
 <hr>
