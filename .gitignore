@@ -2,6 +2,8 @@
 *.d
 .vscode
 cliper
+build
+*.kdev4
 
 # Object files
 *.o

@@ -17,10 +17,23 @@
  */
 
 #pragma once
-#include <stddef.h>
-#include "data.h"
+#include "database.hpp"
+#define CLIPER_VERSION "v1.2"
 
-void cliper_append(cliper_db *db, int argc, char **argv);
-void cliper_read_all(cliper_db *db);
-void cliper_remove(cliper_db *db, int argc, char **argv);
-void cliper_search(cliper_db *db, int argc, char **argv);
+#ifdef __linux__
+#define GET_CONFIG_DIR() (std::string(getenv("HOME")) + "/.config/")
+#else
+#error "Unsupported platform. Please use Linux for building CLIper."
+#endif
+
+class Cliper {
+public:
+  Database db;
+
+  void commandAppend(int argc, char **argv);
+  void commandList(int argc, char **argv);
+  void commandRemove(int argc, char **argv);
+  void commandSearch(int argc, char **argv);
+
+  void runCommand(int argc, char **argv);
+};

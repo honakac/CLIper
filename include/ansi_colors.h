@@ -5,6 +5,8 @@
  */
 
 //Regular text
+#pragma once
+
 #define BLK "\e[0;30m"
 #define RED "\e[0;31m"
 #define GRN "\e[0;32m"
@@ -44,7 +46,7 @@
 #define CYNB "\e[46m"
 #define WHTB "\e[47m"
 
-//High intensty background 
+//High intensty background
 #define BLKHB "\e[0;100m"
 #define REDHB "\e[0;101m"
 #define GRNHB "\e[0;102m"
