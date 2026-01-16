@@ -11,12 +11,10 @@ CLIper - Lightweight CLI tool for managing notes in the terminal.<br>
 CLIper is a simple command-line tool that allows you to manage notes directly from your terminal. It provides basic functionality for creating, reading, and clearing notes.
 
 # Compilation:
-To compile CLIper, you need a C++ compiler. Use the following command:
+To compile CLIper, you need a Go compiler. Use the following command:
 
 ```
-cd build
-cmake ..
-make
+go build
 ```
 
 ## Examples:
@@ -31,6 +29,6 @@ make
 <hr>
 <br>
 
-CLIper is distributed under the GNU General Public License v3 or later. For more details, see the LICENSE file or visit https://www.gnu.org/licenses/.
+CLIper is distributed under the MIT License. For more details, see the LICENSE file.
 
 For bug reports or feature requests, please contact Andrey Stekolnikov at **honakac@yandex.ru**.

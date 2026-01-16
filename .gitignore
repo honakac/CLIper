@@ -1,56 +1,32 @@
-# Prerequisites
-*.d
-.vscode
-cliper
-build
-*.kdev4
-
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
-
-# Linker output
-*.ilk
-*.map
-*.exp
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+# Binaries for programs and plugins
+*.exe
+*.exe~
 *.dll
 *.so
-*.so.*
 *.dylib
 
-# Executables
-*.exe
+# Test binary, built with `go test -c`
+*.test
+
+# Code coverage profiles and other test artifacts
 *.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+coverage.*
+*.coverprofile
+profile.cov
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
+# Dependency directories (remove the comment below to include it)
+# vendor/
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+# Go workspace file
+go.work
+go.work.sum
+
+# env file
+.env
+
+# Editor/IDE
+# .idea/
+# .vscode/
