@@ -1,4 +1,3 @@
-<hr>
 <div align="center">
   <img src="https://www.aschey.tech/tokei/github/honakac/CLIper">
   <img src="https://img.shields.io/github/languages/code-size/honakac/CLIper.svg">
