@@ -6,9 +6,6 @@
 <br>
 
 
-> [!WARNING]  
-> The code is being rewritten in the Go language, so the functionality is temporarily empty
-
 # CLIper
 CLIper - Lightweight CLI tool for managing notes in the terminal.<br>
 CLIper is a simple command-line tool that allows you to manage notes directly from your terminal. It provides basic functionality for creating, reading, and clearing notes.
