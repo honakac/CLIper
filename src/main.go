@@ -1,14 +1,18 @@
 package main
 
 import (
+	"cliper/database"
 	"fmt"
 	"os"
 )
 
 func main() {
-	RootCmd.AddCommand(VersionCmd)
-	
-	if err := RootCmd.Execute(); err != nil {
+	db := database.Init()
+	defer db.Close()
+
+	rootCmd := NewRootCmd(&db)
+
+	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
