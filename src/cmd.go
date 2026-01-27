@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"strconv"
 	"strings"
 	"time"
+
+	"github.com/charmbracelet/log"
 
 	"cliper/database"
 
@@ -40,7 +42,7 @@ func NewAppendCmd(db *database.Database, opts *AppendOptions) (cmd *cobra.Comman
 		Short: "Create new note",
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := db.Read(); err != nil && err.Error() != "EOF" {
-				panic(err)
+				log.Fatal(err)
 			}
 
 			db.Append(database.Note{
@@ -51,7 +53,7 @@ func NewAppendCmd(db *database.Database, opts *AppendOptions) (cmd *cobra.Comman
 			})
 
 			if err := db.Write(); err != nil {
-				panic(err)
+				log.Fatal(err)
 			}
 		},
 	}
@@ -74,7 +76,7 @@ func NewListCmd(db *database.Database) (cmd *cobra.Command) {
 				if err.Error() == "EOF" {
 					fmt.Println("Empty!")
 				} else {
-					panic(err)
+					log.Fatal(err)
 				}
 			}
 
@@ -96,17 +98,16 @@ func NewRemoveCmd(db *database.Database, opts *RemoveOptions) (cmd *cobra.Comman
 		Short: "Remove note by index",
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := db.Read(); err != nil && err.Error() != "EOF" {
-				panic(err)
+				log.Fatal(err)
 			}
 
 			if opts.Index >= len(db.NoteList) || opts.Index < 0 {
-				fmt.Fprintln(os.Stderr, "Invalid index!")
-				os.Exit(2)
+				log.Fatal("Invalid index " + strconv.Itoa(opts.Index))
 			}
 			db.Remove(opts.Index)
 
 			if err := db.Write(); err != nil {
-				panic(err)
+				log.Fatal(err)
 			}
 		},
 	}
@@ -124,12 +125,11 @@ func NewGetCmd(db *database.Database, opts *GetOptions) (cmd *cobra.Command) {
 		Short: "Get note by index",
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := db.Read(); err != nil && err.Error() != "EOF" {
-				panic(err)
+				log.Fatal(err)
 			}
 
 			if opts.Index >= len(db.NoteList) || opts.Index < 0 {
-				fmt.Fprintln(os.Stderr, "Invalid index!")
-				os.Exit(2)
+				log.Fatal("Invalid index " + strconv.Itoa(opts.Index))
 			}
 
 			note := db.NoteList[opts.Index]
@@ -139,7 +139,7 @@ func NewGetCmd(db *database.Database, opts *GetOptions) (cmd *cobra.Command) {
 			fmt.Printf("%s %q (Tags: %q):\n%s\n", noteTimestamp, note.Title, noteTags, note.Content)
 
 			if err := db.Write(); err != nil {
-				panic(err)
+				log.Fatal(err)
 			}
 		},
 	}
